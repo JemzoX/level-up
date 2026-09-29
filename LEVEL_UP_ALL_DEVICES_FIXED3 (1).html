@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070914">
+<title>LEVEL UP — Lernwelt</title>
+<style>
+*{box-sizing:border-box}
+html{width:100%;min-height:100%;font-size:clamp(14px,0.35vw + 12px,18px)}
+body{margin:0;min-width:280px;width:100%;background:#070914;color:#f7f8ff;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh;overflow-x:hidden}
+:root{--p:#7c5cff;--c:#18d5ff;--g:#37df9b;--pink:#ff5d9e;--panel:#11162b;--line:#2b3560;--muted:#a7afcf}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 10% 0%,#4032a455,transparent 32%),radial-gradient(circle at 100% 20%,#00b8d833,transparent 28%)}
+button,input,select{font:inherit}
+button{cursor:pointer;touch-action:manipulation}
+.app{width:min(96vw,1600px);margin:0 auto;padding:clamp(10px,2vw,30px)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.logo{font-weight:1000;font-size:clamp(21px,2.2vw,34px)}
+.logo b{color:var(--c)}
+.topright{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.chip,.tag{border:1px solid var(--line);background:#ffffff09;border-radius:999px;padding:8px 11px;color:#dfe4ff;font-size:clamp(12px,1vw,15px)}
+.card{background:linear-gradient(145deg,#171c38ee,#0f1429ee);border:1px solid var(--line);border-radius:clamp(16px,1.5vw,24px);padding:clamp(14px,1.7vw,26px);box-shadow:0 18px 55px #0007}
+.hero{padding:clamp(18px,2.5vw,36px);position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:clamp(120px,15vw,230px);height:clamp(120px,15vw,230px);border-radius:50%;right:-70px;top:-70px;background:#7c5cff22;box-shadow:0 0 80px #18d5ff22}
+.title{font-size:clamp(25px,3vw,44px);line-height:1.1;margin:9px 0}
+.sub{color:var(--muted);margin:0 0 18px;line-height:1.5}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:clamp(10px,1.2vw,18px)}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:clamp(10px,1.2vw,18px)}
+.two{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(280px,.7fr);gap:14px}
+.world{min-height:175px;display:flex;flex-direction:column;justify-content:space-between;transition:.18s}
+.world:hover{transform:translateY(-4px);border-color:#6673b8;box-shadow:0 20px 60px #0008}
+.emoji{font-size:clamp(34px,4vw,52px)}
+.world h3{margin:8px 0 2px;font-size:clamp(18px,1.6vw,24px)}
+.muted{color:var(--muted)}
+.btn{border:1px solid #ffffff20;border-radius:14px;padding:clamp(11px,1vw,15px) clamp(13px,1.2vw,18px);background:linear-gradient(135deg,var(--p),#4c8cff);color:#fff;font-weight:850;box-shadow:0 8px 25px #0004;min-height:44px}
+.btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn.alt{background:#ffffff08;border-color:var(--line)}
+.btn.good{background:linear-gradient(135deg,#13ae7d,#42dfaa)}
+.btn.pink{background:linear-gradient(135deg,#e94788,#ff7aaf)}
+.btn.danger{background:#9e2d52}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.nav{display:flex;gap:7px;overflow-x:auto;padding:10px 0;scrollbar-width:thin}
+.nav button{white-space:nowrap;border:1px solid transparent;background:#ffffff07;color:#aeb7d9;padding:10px 13px;border-radius:13px;min-height:44px}
+.nav button.active{border-color:var(--line);color:white;background:#ffffff0e}
+.statgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.stat{font-size:clamp(22px,2.5vw,34px);font-weight:950}
+.progress{height:10px;background:#080b18;border:1px solid #252d50;border-radius:99px;overflow:hidden}
+.bar{height:100%;background:linear-gradient(90deg,var(--p),var(--c));transition:.4s}
+.quest{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:15px;padding:12px;background:#ffffff05}
+.list{display:grid;gap:9px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:15px;padding:12px;background:#ffffff05}
+.modal{position:fixed;inset:0;background:#000a;display:grid;place-items:center;padding:16px;z-index:20}
+.modalbox{width:min(560px,100%);max-height:90vh;overflow:auto}
+.field{display:grid;gap:6px;margin:11px 0}
+.field input,.field select{width:100%;padding:13px;border-radius:13px;border:1px solid var(--line);background:#080c1b;color:white;outline:0}
+.field input:focus{border-color:var(--c);box-shadow:0 0 0 3px #18d5ff16}
+.hidden{display:none!important}
+.toast{position:fixed;right:15px;bottom:15px;z-index:30;background:#161c36;border:1px solid var(--line);padding:13px 16px;border-radius:14px;box-shadow:0 15px 45px #0009;max-width:min(90vw,420px)}
+.answer{width:100%;text-align:left;margin:7px 0}
+.answer.correct{border-color:#37df9b;background:#143c32}.answer.wrong{border-color:#ff5d9e;background:#40182a}
+.lesson{border-left:4px solid var(--c);padding:13px 15px;background:#ffffff05;border-radius:0 14px 14px 0}
+.rank{font-size:14px;color:#c9d0ee}.big{font-size:clamp(36px,5vw,60px)}.center{text-align:center}.lock{opacity:.55}.small{font-size:12px}
+img,video,canvas,iframe{max-width:100%;height:auto}
+h1,h2,h3,p{overflow-wrap:anywhere}
+@media (max-width:900px){.two{grid-template-columns:1fr}.statgrid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:600px){.app{width:100%;padding:10px}.top{align-items:flex-start}.topright{width:100%;justify-content:flex-start}.nav{margin-left:-2px;margin-right:-2px}.hero{padding:18px}.grid3{grid-template-columns:1fr}.quest,.row{align-items:flex-start;flex-direction:column}.btn{width:100%}.actions .btn{flex:1 1 100%}}
+@media (min-width:1800px){.app{width:min(92vw,1800px)}}
+@media (orientation:landscape) and (max-height:600px){.app{padding:8px}.hero{padding:14px}.nav{padding:5px 0}}
+@media (min-resolution:2dppx){button,input,select{font-synthesis:none}}
+.skin-neon .card{border-color:#5de7ff;box-shadow:0 0 0 1px #5de7ff22,0 18px 55px #00d9ff22}
+.skin-neon .nav button.active{border-color:#5de7ff}.skin-crown .card{border-color:#e8bd54;box-shadow:0 0 0 1px #e8bd5422,0 18px 55px #e8bd5418}.skin-crown .nav button.active{border-color:#e8bd54}.skin-blitz .card{border-color:#ff9d42;box-shadow:0 0 0 1px #ff9d4222,0 18px 55px #ff6a0018}.skin-blitz .nav button.active{border-color:#ff9d42}.skin-galaxy .card{border-color:#a77cff;box-shadow:0 0 0 1px #a77cff22,0 18px 55px #7c5cff25}.skin-galaxy .nav button.active{border-color:#a77cff}.skin-fire .card{border-color:#ff5d72;box-shadow:0 0 0 1px #ff5d7222,0 18px 55px #ff3b3018}.skin-fire .nav button.active{border-color:#ff5d72}
+.coinbox{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #eabf4a55;background:#eabf4a0d;border-radius:16px;padding:12px 14px}
+</style>
+</head>
+<body>
+<div id="root"></div><div id="toast" class="toast hidden"></div>
+<script>
+const KEY="levelup_all_devices_v3";
+let db={xp:0,coins:100,done:{},name:"Player",equipped:""};
+try{const raw=localStorage.getItem(KEY);if(raw){const parsed=JSON.parse(raw);if(parsed&&typeof parsed==="object")db={...db,...parsed};}}catch(e){console.warn("Fortschritt konnte nicht geladen werden",e)}
+if(!db||typeof db!=="object")db={xp:0,coins:100,done:{},name:"Player",equipped:""};
+if(!db.done||typeof db.done!=="object")db.done={};
+if(!Number.isFinite(db.xp))db.xp=0;
+if(!Number.isFinite(db.coins))db.coins=100;
+let subject="home";
+const worlds={
+ math:["➗","Mathe","Multiplikation, Division, Brüche & mehr"],
+ de:["✍️","Deutsch","Reime, Verse, Wortarten & Sätze"],
+ science:["🔬","NaWi","Stoffe, Energie, Körper & Strom"],
+ geo:["🌍","Geo","Himmelsrichtungen, Kontinente, Ozeane & Länder"]
+};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){console.warn("Speichern nicht möglich",e)}}
+function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.remove("hidden");setTimeout(()=>e.classList.add("hidden"),2200)}
+function level(){return Math.floor(db.xp/250)+1}
+function gain(n){db.xp+=n;db.coins+=Math.max(1,Math.floor(n/5));save()}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function header(){return `<header class="top"><div class="logo">LEVEL <b>UP</b> 🌌</div><div class="topright"><span class="chip">⭐ ${db.xp} XP</span><span class="chip">🪙 ${db.coins}</span><span class="chip">🏆 Level ${level()}</span></div></header>`}
+function nav(){return `<nav class="nav">${["home","learn","shop"].map((x,i)=>`<button class="${subject===x?"active":""}" onclick="go('${x}')">${["🏠 Start","🧠 Lernen","🛍️ Shop"][i]}</button>`).join("")}</nav>`}
+function layout(body){document.getElementById("root").innerHTML=`<main class="app">${header()}${nav()}${body}</main>`}
+function home(){
+ let xp=db.xp%250;
+ layout(`<section class="card hero"><span class="tag">🎮 LERNWELT</span><h1 class="title">Willkommen, ${esc(db.name)} 👋</h1><p class="sub">Die Oberfläche passt sich automatisch an Handy, Tablet, Laptop, PC und große Fernseher an.</p><div class="statgrid"><div class="card"><div class="muted">Level</div><div class="stat">${level()}</div></div><div class="card"><div class="muted">XP</div><div class="stat">${db.xp}</div></div><div class="card"><div class="muted">Coins</div><div class="stat">🪙 ${db.coins}</div></div><div class="card"><div class="muted">Missionen</div><div class="stat">${Object.keys(db.done).length}</div></div></div><div style="margin-top:14px"><div class="progress"><div class="bar" style="width:${xp/2.5}%"></div></div><div class="small muted" style="margin-top:5px">${xp}/250 XP bis zum nächsten Level</div></div></section><h2>🗺️ Lernwelten</h2><section class="grid">${Object.entries(worlds).map(([k,w])=>`<article class="card world" onclick="start('${k}')"><div><div class="emoji">${w[0]}</div><h3>${w[1]}</h3><p class="muted">${w[2]}</p></div><span class="tag">STARTEN →</span></article>`).join("")}</section>`)
+}
+const questions={
+math:[
+["Was ist 7 × 8?","56",["54","48","64"]],["Was ist 36 : 6?","6",["5","7","8"]],["Welches ist ein Teiler von 24?","6",["5","7","11"]],["Was ist 3/4 von 20?","15",["10","12","18"]],["kgV(4,6) = ?","12",["8","10","24"]],["Was ist 9 × 6?","54",["45","48","63"]],["Was ist 72 : 8?","9",["8","10","12"]],["Welches ist ein Vielfaches von 7?","35",["32","34","36"]],["Was ist 5/6 von 24?","20",["18","16","22"]],["Was ist der ggT von 12 und 18?","6",["3","9","12"]],["Was ist 8 × 7?","56",["48","54","64"]],["Was ist 81 : 9?","9",["7","8","10"]],["Welcher Bruch ist größer: 3/8 oder 5/8?","5/8",["3/8","4/8","2/8"]],["Wie viele Seiten hat ein Quadrat?","4",["3","5","6"]],["Was ist 25 + 37?","62",["52","60","72"]]
+],
+de:[
+["Welches Wort ist ein Verb?","laufen",["blau","Haus","schnell"]],["Wie heißt eine Zeile im Gedicht?","Vers",["Strophe","Absatz","Refrain"]],["Was ist eine Metapher?","Bildlicher Ausdruck",["Zahl","Rechenregel","Landkarte"]],["Was reimt sich auf Haus?","Maus",["Baum","Hund","Sonne"]],["Was gehört zu einem Gedicht?","Verse",["Passwort","Maßstab","Bruchstrich"]],["Welches Wort ist ein Nomen?","Schule",["laufen","schnell","blau"]],["Welches Wort ist ein Adjektiv?","fröhlich",["springen","Tisch","laufen"]],["Was steht am Ende eines Aussagesatzes?","Punkt",["Komma","Fragezeichen","Doppelpunkt"]],["Was ist das Gegenteil von hell?","dunkel",["laut","klein","schnell"]],["Welches Wort reimt sich auf Maus?","Haus",["Kind","Ball","Sonne"]],["Was ist eine Strophe?","Mehrere Verse als Einheit",["Ein einzelnes Wort","Eine Zahl","Ein Satzzeichen"]],["Welches Wort ist ein Pronomen?","ich",["Haus","laufen","blau"]],["Was ist ein Satz?","Eine sprachliche Einheit mit Sinn",["Nur ein Buchstabe","Eine Zahl","Ein Bild"]],["Welches Wort ist ein Nomen?","Baum",["springen","grün","schnell"]],["Was ist ein Synonym für froh?","glücklich",["traurig","müde","laut"]]
+],
+science:[
+["Welcher Stoffzustand hat eine feste Form?","fest",["flüssig","gasförmig","Dampf"]],["Womit misst man Temperatur?","Thermometer",["Lineal","Kompass","Waage"]],["Welches Organ pumpt Blut?","Herz",["Lunge","Magen","Haut"]],["Was brauchen Pflanzen für Fotosynthese?","Licht",["Schokolade","Magnete","Salz"]],["Wann fließt Strom im einfachen Stromkreis?","Wenn er geschlossen ist",["Wenn er offen ist","Nie","Ohne Leiter"]],["Welcher Stoff ist flüssig?","Wasser",["Stein","Eisen","Holz"]],["Welche Energie steckt in einer Batterie?","elektrische Energie",["Tonsenergie","Kartenenergie","Regenenergie"]],["Welches Organ hilft beim Atmen?","Lunge",["Herz","Magen","Haut"]],["Was zieht ein Magnet an?","Eisen",["Papier","Holz","Glas"]],["Was passiert mit Wasser beim Gefrieren?","Es wird zu Eis",["Es wird zu Dampf","Es verschwindet","Es wird zu Salz"]],["Welche Energie liefert die Sonne?","Lichtenergie",["Kartenenergie","Buchenergie","Schalllosenergie"]],["Was ist ein Leiter?","Ein Material, das Strom gut leitet",["Ein Magnet ohne Pole","Ein Stoff ohne Teilchen","Ein Gerät zum Messen von Zeit"]],["Welcher Zustand hat kein festes Volumen?","gasförmig",["fest","steinförmig","eisförmig"]],["Was schützt die Haut?","Sie bildet eine äußere Schutzschicht",["Sie pumpt Blut","Sie verdaut Essen","Sie misst Temperatur"]],["Was braucht ein einfacher Stromkreis außer einer Batterie?","Leitende Verbindung",["Nur Papier","Nur Wasser","Nur Luft"]]
+],
+geo:[
+["In welcher Himmelsrichtung geht die Sonne ungefähr auf?","Osten",["Norden","Süden","Westen"]],["Auf welchem Kontinent liegt Deutschland?","Europa",["Afrika","Asien","Australien"]],["Welcher ist ein Ozean?","Atlantik",["Alpen","Sahara","Amazonas"]],["Was zeigt ein Kartenmaßstab?","Entfernungsverhältnis",["Temperatur","Bevölkerung","Höhe allein"]],["Welche Hauptstadt hat Dänemark?","Kopenhagen",["Warschau","Prag","Paris"]],["Welches Land grenzt im Westen an Deutschland?","Frankreich",["Polen","Dänemark","Österreich"]],["Welche Hauptstadt hat Polen?","Warschau",["Prag","Wien","Bern"]],["Welche Hauptstadt hat Tschechien?","Prag",["Wien","Brüssel","Amsterdam"]],["Welche Hauptstadt hat Österreich?","Wien",["Paris","Bern","Kopenhagen"]],["Welche Hauptstadt hat die Schweiz?","Bern",["Luxemburg","Brüssel","Warschau"]],["Welche Hauptstadt hat Frankreich?","Paris",["Amsterdam","Prag","Wien"]],["Welche Hauptstadt hat Luxemburg?","Luxemburg",["Brüssel","Bern","Kopenhagen"]],["Welche Hauptstadt hat Belgien?","Brüssel",["Paris","Amsterdam","Warschau"]],["Welche Hauptstadt hat die Niederlande?","Amsterdam",["Kopenhagen","Wien","Luxemburg"]],["Wie viele Länder grenzen an Deutschland?","9",["7","8","10"]]
+]};
+function start(k){subject=k;showQuestions(0)}
+function showQuestions(i){
+ const arr=questions[subject]; const q=arr[i%arr.length];
+ layout(`<section class="card hero"><span class="tag">${worlds[subject][0]} ${worlds[subject][1]}</span><h1 class="title">Frage ${i+1} von 15</h1><p class="sub">Jede Mission hat 15 Fragen. Auch bei einer falschen Antwort geht es weiter.</p></section><section class="card"><h2>${esc(q[0])}</h2>${[q[1],...q[2]].sort(()=>Math.random()-.5).map(a=>`<button class="btn alt answer" onclick='answer(${JSON.stringify(a)},${JSON.stringify(q[1])},${i})'>${esc(a)}</button>`).join("")}</section>`)
+}
+function answer(a,good,i){
+ if(a===good){gain(10);toast("Richtig! +10 XP ⭐")}else toast("Falsch – trotzdem weiter! ➡️");
+ if(i>=14){db.done[subject]=true;gain(25);save();setTimeout(()=>{layout(`<section class="card hero center"><div class="big">🎉</div><h1 class="title">15 Fragen geschafft!</h1><p class="sub">Mission abgeschlossen.</p><button class="btn" onclick="home()">Zur Startseite</button></section>`)},250)}
+ else setTimeout(()=>showQuestions(i+1),250)
+}
+function shop(){
+ const items=[["🌈","Neon-Rahmen",50],["👑","Kronen-Titel",100],["⚡","Blitz-Titel",150],["🌌","Galaxy-Skin",200],["🔥","Feuer-Rahmen",250]];
+ layout(`<section class="card hero"><span class="tag">🛍️ SHOP</span><h1 class="title">Dein Style</h1><p class="sub">Coins aus Lernmissionen ausgeben.</p><div class="coinbox"><b>🪙 ${db.coins} Coins</b></div></section><section class="grid3" style="margin-top:13px">${items.map(x=>`<article class="card"><div class="big">${x[0]}</div><h3>${x[1]}</h3><p class="muted">${x[2]} Coins</p><button class="btn" onclick="buy(${x[2]},'${x[1]}')">Kaufen</button></article>`).join("")}</section>`)
+}
+function buy(cost,name){if(db.coins<cost)return toast("Nicht genug Coins 💸");db.coins-=cost;db.equipped=name;save();toast("✨ "+name+" ausgerüstet");shop()}
+function go(p){subject=p;if(p==="home")home();if(p==="learn")learn();if(p==="shop")shop()}
+function learn(){layout(`<section class="card hero"><span class="tag">🧠 LERNEN</span><h1 class="title">Wähle eine Lernwelt</h1><p class="sub">15 Fragen pro Runde.</p></section><section class="grid">${Object.entries(worlds).map(([k,w])=>`<article class="card world" onclick="start('${k}')"><div class="emoji">${w[0]}</div><h3>${w[1]}</h3><p class="muted">${w[2]}</p><button class="btn">Lernen →</button></article>`).join("")}</section>`)}
+window.addEventListener("error",e=>{console.error(e);const r=document.getElementById("root");if(r&&r.innerHTML.trim()===""){r.innerHTML=`<main class="app"><section class="card hero center"><div class="big">⚠️</div><h1 class="title">LEVEL UP konnte nicht starten</h1><p class="sub">Bitte Seite neu laden.</p><button class="btn" onclick="location.reload()">Neu laden</button></section></main>`}});
+try{home()}catch(e){console.error(e);document.getElementById("root").innerHTML=`<main class="app"><section class="card hero center"><div class="big">⚠️</div><h1 class="title">LEVEL UP konnte nicht starten</h1><p class="sub">Ein Startfehler wurde erkannt. Bitte Seite neu laden.</p><button class="btn" onclick="location.reload()">Neu laden</button></section></main>`}
+</script></body></html>
