@@ -75,8 +75,13 @@ h1,h2,h3,p{overflow-wrap:anywhere}
 <body>
 <div id="root"></div><div id="toast" class="toast hidden"></div>
 <script>
-const KEY="levelup_responsive_v2";
-let db=JSON.parse(localStorage.getItem(KEY)||"null")||{xp:0,coins:100,done:{},name:"Player",equipped:""};
+const KEY="levelup_all_devices_v3";
+let db={xp:0,coins:100,done:{},name:"Player",equipped:""};
+try{const raw=localStorage.getItem(KEY);if(raw){const parsed=JSON.parse(raw);if(parsed&&typeof parsed==="object")db={...db,...parsed};}}catch(e){console.warn("Fortschritt konnte nicht geladen werden",e)}
+if(!db||typeof db!=="object")db={xp:0,coins:100,done:{},name:"Player",equipped:""};
+if(!db.done||typeof db.done!=="object")db.done={};
+if(!Number.isFinite(db.xp))db.xp=0;
+if(!Number.isFinite(db.coins))db.coins=100;
 let subject="home";
 const worlds={
  math:["➗","Mathe","Multiplikation, Division, Brüche & mehr"],
@@ -84,7 +89,7 @@ const worlds={
  science:["🔬","NaWi","Stoffe, Energie, Körper & Strom"],
  geo:["🌍","Geo","Himmelsrichtungen, Kontinente, Ozeane & Länder"]
 };
-function save(){localStorage.setItem(KEY,JSON.stringify(db))}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){console.warn("Speichern nicht möglich",e)}}
 function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.remove("hidden");setTimeout(()=>e.classList.add("hidden"),2200)}
 function level(){return Math.floor(db.xp/250)+1}
 function gain(n){db.xp+=n;db.coins+=Math.max(1,Math.floor(n/5));save()}
@@ -97,18 +102,25 @@ function home(){
  layout(`<section class="card hero"><span class="tag">🎮 LERNWELT</span><h1 class="title">Willkommen, ${esc(db.name)} 👋</h1><p class="sub">Die Oberfläche passt sich automatisch an Handy, Tablet, Laptop, PC und große Fernseher an.</p><div class="statgrid"><div class="card"><div class="muted">Level</div><div class="stat">${level()}</div></div><div class="card"><div class="muted">XP</div><div class="stat">${db.xp}</div></div><div class="card"><div class="muted">Coins</div><div class="stat">🪙 ${db.coins}</div></div><div class="card"><div class="muted">Missionen</div><div class="stat">${Object.keys(db.done).length}</div></div></div><div style="margin-top:14px"><div class="progress"><div class="bar" style="width:${xp/2.5}%"></div></div><div class="small muted" style="margin-top:5px">${xp}/250 XP bis zum nächsten Level</div></div></section><h2>🗺️ Lernwelten</h2><section class="grid">${Object.entries(worlds).map(([k,w])=>`<article class="card world" onclick="start('${k}')"><div><div class="emoji">${w[0]}</div><h3>${w[1]}</h3><p class="muted">${w[2]}</p></div><span class="tag">STARTEN →</span></article>`).join("")}</section>`)
 }
 const questions={
-math:[["Was ist 7 × 8?","56",["54","48","64"]],["Was ist 36 : 6?","6",["5","7","8"]],["Welches ist ein Teiler von 24?","6",["5","7","11"]],["Was ist 3/4 von 20?","15",["10","12","18"]],["kgV(4,6) = ?","12",["8","10","24"]]],
-de:[["Welches Wort ist ein Verb?","laufen",["blau","Haus","schnell"]],["Wie heißt eine Zeile im Gedicht?","Vers",["Strophe","Absatz","Refrain"]],["Was ist eine Metapher?","Bildlicher Ausdruck",["Zahl","Rechenregel","Landkarte"]],["Was reimt sich auf Haus?","Maus",["Baum","Hund","Sonne"]],["Was gehört zu einem Gedicht?","Verse",["Passwort","Maßstab","Bruchstrich"]]],
-science:[["Welcher Stoffzustand hat eine feste Form?","fest",["flüssig","gasförmig","Dampf"]],["Womit misst man Temperatur?","Thermometer",["Lineal","Kompass","Waage"]],["Welches Organ pumpt Blut?","Herz",["Lunge","Magen","Haut"]],["Was brauchen Pflanzen für Fotosynthese?","Licht",["Schokolade","Magnete","Salz"]],["Wann fließt Strom im einfachen Stromkreis?","Wenn er geschlossen ist",["Wenn er offen ist","Nie","Ohne Leiter"]]],
-geo:[["In welcher Himmelsrichtung geht die Sonne ungefähr auf?","Osten",["Norden","Süden","Westen"]],["Auf welchem Kontinent liegt Deutschland?","Europa",["Afrika","Asien","Australien"]],["Welcher ist ein Ozean?","Atlantik",["Alpen","Sahara","Amazonas"]],["Was zeigt ein Kartenmaßstab?","Entfernungsverhältnis",["Temperatur","Bevölkerung","Höhe allein"]],["Welche Hauptstadt hat Dänemark?","Kopenhagen",["Warschau","Prag","Paris"]]]
-};
+math:[
+["Was ist 7 × 8?","56",["54","48","64"]],["Was ist 36 : 6?","6",["5","7","8"]],["Welches ist ein Teiler von 24?","6",["5","7","11"]],["Was ist 3/4 von 20?","15",["10","12","18"]],["kgV(4,6) = ?","12",["8","10","24"]],["Was ist 9 × 6?","54",["45","48","63"]],["Was ist 72 : 8?","9",["8","10","12"]],["Welches ist ein Vielfaches von 7?","35",["32","34","36"]],["Was ist 5/6 von 24?","20",["18","16","22"]],["Was ist der ggT von 12 und 18?","6",["3","9","12"]],["Was ist 8 × 7?","56",["48","54","64"]],["Was ist 81 : 9?","9",["7","8","10"]],["Welcher Bruch ist größer: 3/8 oder 5/8?","5/8",["3/8","4/8","2/8"]],["Wie viele Seiten hat ein Quadrat?","4",["3","5","6"]],["Was ist 25 + 37?","62",["52","60","72"]]
+],
+de:[
+["Welches Wort ist ein Verb?","laufen",["blau","Haus","schnell"]],["Wie heißt eine Zeile im Gedicht?","Vers",["Strophe","Absatz","Refrain"]],["Was ist eine Metapher?","Bildlicher Ausdruck",["Zahl","Rechenregel","Landkarte"]],["Was reimt sich auf Haus?","Maus",["Baum","Hund","Sonne"]],["Was gehört zu einem Gedicht?","Verse",["Passwort","Maßstab","Bruchstrich"]],["Welches Wort ist ein Nomen?","Schule",["laufen","schnell","blau"]],["Welches Wort ist ein Adjektiv?","fröhlich",["springen","Tisch","laufen"]],["Was steht am Ende eines Aussagesatzes?","Punkt",["Komma","Fragezeichen","Doppelpunkt"]],["Was ist das Gegenteil von hell?","dunkel",["laut","klein","schnell"]],["Welches Wort reimt sich auf Maus?","Haus",["Kind","Ball","Sonne"]],["Was ist eine Strophe?","Mehrere Verse als Einheit",["Ein einzelnes Wort","Eine Zahl","Ein Satzzeichen"]],["Welches Wort ist ein Pronomen?","ich",["Haus","laufen","blau"]],["Was ist ein Satz?","Eine sprachliche Einheit mit Sinn",["Nur ein Buchstabe","Eine Zahl","Ein Bild"]],["Welches Wort ist ein Nomen?","Baum",["springen","grün","schnell"]],["Was ist ein Synonym für froh?","glücklich",["traurig","müde","laut"]]
+],
+science:[
+["Welcher Stoffzustand hat eine feste Form?","fest",["flüssig","gasförmig","Dampf"]],["Womit misst man Temperatur?","Thermometer",["Lineal","Kompass","Waage"]],["Welches Organ pumpt Blut?","Herz",["Lunge","Magen","Haut"]],["Was brauchen Pflanzen für Fotosynthese?","Licht",["Schokolade","Magnete","Salz"]],["Wann fließt Strom im einfachen Stromkreis?","Wenn er geschlossen ist",["Wenn er offen ist","Nie","Ohne Leiter"]],["Welcher Stoff ist flüssig?","Wasser",["Stein","Eisen","Holz"]],["Welche Energie steckt in einer Batterie?","elektrische Energie",["Tonsenergie","Kartenenergie","Regenenergie"]],["Welches Organ hilft beim Atmen?","Lunge",["Herz","Magen","Haut"]],["Was zieht ein Magnet an?","Eisen",["Papier","Holz","Glas"]],["Was passiert mit Wasser beim Gefrieren?","Es wird zu Eis",["Es wird zu Dampf","Es verschwindet","Es wird zu Salz"]],["Welche Energie liefert die Sonne?","Lichtenergie",["Kartenenergie","Buchenergie","Schalllosenergie"]],["Was ist ein Leiter?","Ein Material, das Strom gut leitet",["Ein Magnet ohne Pole","Ein Stoff ohne Teilchen","Ein Gerät zum Messen von Zeit"]],["Welcher Zustand hat kein festes Volumen?","gasförmig",["fest","steinförmig","eisförmig"]],["Was schützt die Haut?","Sie bildet eine äußere Schutzschicht",["Sie pumpt Blut","Sie verdaut Essen","Sie misst Temperatur"]],["Was braucht ein einfacher Stromkreis außer einer Batterie?","Leitende Verbindung",["Nur Papier","Nur Wasser","Nur Luft"]]
+],
+geo:[
+["In welcher Himmelsrichtung geht die Sonne ungefähr auf?","Osten",["Norden","Süden","Westen"]],["Auf welchem Kontinent liegt Deutschland?","Europa",["Afrika","Asien","Australien"]],["Welcher ist ein Ozean?","Atlantik",["Alpen","Sahara","Amazonas"]],["Was zeigt ein Kartenmaßstab?","Entfernungsverhältnis",["Temperatur","Bevölkerung","Höhe allein"]],["Welche Hauptstadt hat Dänemark?","Kopenhagen",["Warschau","Prag","Paris"]],["Welches Land grenzt im Westen an Deutschland?","Frankreich",["Polen","Dänemark","Österreich"]],["Welche Hauptstadt hat Polen?","Warschau",["Prag","Wien","Bern"]],["Welche Hauptstadt hat Tschechien?","Prag",["Wien","Brüssel","Amsterdam"]],["Welche Hauptstadt hat Österreich?","Wien",["Paris","Bern","Kopenhagen"]],["Welche Hauptstadt hat die Schweiz?","Bern",["Luxemburg","Brüssel","Warschau"]],["Welche Hauptstadt hat Frankreich?","Paris",["Amsterdam","Prag","Wien"]],["Welche Hauptstadt hat Luxemburg?","Luxemburg",["Brüssel","Bern","Kopenhagen"]],["Welche Hauptstadt hat Belgien?","Brüssel",["Paris","Amsterdam","Warschau"]],["Welche Hauptstadt hat die Niederlande?","Amsterdam",["Kopenhagen","Wien","Luxemburg"]],["Wie viele Länder grenzen an Deutschland?","9",["7","8","10"]]
+]};
 function start(k){subject=k;showQuestions(0)}
 function showQuestions(i){
  const arr=questions[subject]; const q=arr[i%arr.length];
- layout(`<section class="card hero"><span class="tag">${worlds[subject][0]} ${worlds[subject][1]}</span><h1 class="title">Frage ${i+1} von 15</h1><p class="sub">Jede Mission hat 15 Fragen. Auch bei einer falschen Antwort geht es weiter.</p></section><section class="card"><h2>${esc(q[0])}</h2>${[q[1],...q[2]].sort(()=>Math.random()-.5).map(a=>`<button class="btn alt answer" onclick="answer(${JSON.stringify(a)},${JSON.stringify(q[1])},${i})">${esc(a)}</button>`).join("")}</section>`)
+ layout(`<section class="card hero"><span class="tag">${worlds[subject][0]} ${worlds[subject][1]}</span><h1 class="title">Frage ${i+1} von 15</h1><p class="sub">Jede Mission hat 15 Fragen. Auch bei einer falschen Antwort geht es weiter.</p></section><section class="card"><h2>${esc(q[0])}</h2>${[q[1],...q[2]].sort(()=>Math.random()-.5).map(a=>`<button class="btn alt answer" onclick='answer(${JSON.stringify(a)},${JSON.stringify(q[1])},${i})'>${esc(a)}</button>`).join("")}</section>`)
 }
 function answer(a,good,i){
- if(a===good){gain(10);toast("Richtig! +10 XP ⭐")}else toast("Weiter zur nächsten Frage ➡️");
+ if(a===good){gain(10);toast("Richtig! +10 XP ⭐")}else toast("Falsch – trotzdem weiter! ➡️");
  if(i>=14){db.done[subject]=true;gain(25);save();setTimeout(()=>{layout(`<section class="card hero center"><div class="big">🎉</div><h1 class="title">15 Fragen geschafft!</h1><p class="sub">Mission abgeschlossen.</p><button class="btn" onclick="home()">Zur Startseite</button></section>`)},250)}
  else setTimeout(()=>showQuestions(i+1),250)
 }
@@ -119,5 +131,6 @@ function shop(){
 function buy(cost,name){if(db.coins<cost)return toast("Nicht genug Coins 💸");db.coins-=cost;db.equipped=name;save();toast("✨ "+name+" ausgerüstet");shop()}
 function go(p){subject=p;if(p==="home")home();if(p==="learn")learn();if(p==="shop")shop()}
 function learn(){layout(`<section class="card hero"><span class="tag">🧠 LERNEN</span><h1 class="title">Wähle eine Lernwelt</h1><p class="sub">15 Fragen pro Runde.</p></section><section class="grid">${Object.entries(worlds).map(([k,w])=>`<article class="card world" onclick="start('${k}')"><div class="emoji">${w[0]}</div><h3>${w[1]}</h3><p class="muted">${w[2]}</p><button class="btn">Lernen →</button></article>`).join("")}</section>`)}
-home();
+window.addEventListener("error",e=>{console.error(e);const r=document.getElementById("root");if(r&&r.innerHTML.trim()===""){r.innerHTML=`<main class="app"><section class="card hero center"><div class="big">⚠️</div><h1 class="title">LEVEL UP konnte nicht starten</h1><p class="sub">Bitte Seite neu laden.</p><button class="btn" onclick="location.reload()">Neu laden</button></section></main>`}});
+try{home()}catch(e){console.error(e);document.getElementById("root").innerHTML=`<main class="app"><section class="card hero center"><div class="big">⚠️</div><h1 class="title">LEVEL UP konnte nicht starten</h1><p class="sub">Ein Startfehler wurde erkannt. Bitte Seite neu laden.</p><button class="btn" onclick="location.reload()">Neu laden</button></section></main>`}
 </script></body></html>
